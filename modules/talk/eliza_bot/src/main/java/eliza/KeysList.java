@@ -1,6 +1,7 @@
 package eliza;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.PriorityQueue;
 
 /**
@@ -15,7 +16,7 @@ public class KeysList extends ArrayList<Key>
         s = Utils.trimLeading(s);
         String lines[] = new String[2];
         Key k;
-        while (Utils.match(s, "* *", lines))
+        while (Utils.extractIfMatched(s, "* *", lines))
         {
             k = getKey(lines[0]);
             if (k != null)
@@ -27,9 +28,9 @@ public class KeysList extends ArrayList<Key>
             keys.offer(k);
     }
     
-    public void add(String key, int rank, DecompositionList decomp)
+    public void add(String key, int rank, List<Decomposition> decompositions)
     {
-        add(new Key(key, rank, decomp));
+        add(new Key(key, rank, decompositions));
     }
     
     public Key getKey(String s)

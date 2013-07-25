@@ -30,10 +30,10 @@ public class Synonyms
 
     public boolean matchDecomposition(String str, String pat, String lines[])
     {
-        if (!Utils.match(pat, "*@* *", lines))
+        if (!Utils.extractIfMatched(pat, "*@* *", lines))
         {
             //  no synonyms in decomp pattern
-            return Utils.match(str, pat, lines);
+            return Utils.extractIfMatched(str, pat, lines);
         }
          
         String first = lines[0];
@@ -50,7 +50,7 @@ public class Synonyms
         for (String syn : syns)
         {
             pat = first + syn + theRest;
-            if (Utils.match(str, pat, lines))
+            if (Utils.extractIfMatched(str, pat, lines))
             {
                 int n = Utils.count(first, '*');
                 //  Make room for the synonym in the match list.

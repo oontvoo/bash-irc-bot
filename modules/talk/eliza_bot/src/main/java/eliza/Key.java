@@ -1,16 +1,18 @@
 package eliza;
 
+import java.util.List;
+
 public class Key
 {
     private String key;
     private int rank;
-    private DecompositionList decompositions;
+    private List<Decomposition> decompositions;
 
-    public Key(String key, int rank, DecompositionList decomp)
+    public Key(String key, int rank, List<Decomposition> decompositions)
     {
         this.key = key;
         this.rank = rank;
-        this.decompositions = decomp;
+        this.decompositions = decompositions;
     }
 
     public Key()
@@ -37,7 +39,7 @@ public class Key
         return rank;
     }
 
-    public DecompositionList decompositions()
+    public List<Decomposition> decompositions()
     {
         return decompositions;
     }

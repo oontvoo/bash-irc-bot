@@ -27,7 +27,8 @@ public class Utils
     {
         try
         {
-            // TODO: cached the file as only 10 requests can be made a day
+            // TODO: cached the file as only 10 requests can be made a minute 
+            //       (and 500 a day)
             URL json = new URL(WEATHER);
 
             JSONObject jsonObj = (JSONObject) JSONValue.parse(new InputStreamReader(json.openStream()));
@@ -160,7 +161,7 @@ public class Utils
         return false;
     }
 
-    public static boolean match(String str, String pat, String matches[])
+    public static boolean extractIfMatched(String str, String pat, String matches[])
     {
         return doMatch(str, pat, matches);
     }
@@ -181,7 +182,7 @@ public class Utils
 
     public static String compress(String s)
     {
-        String retVal = "";
+        StringBuilder retVal = new StringBuilder();
         if (s.length() == 0)
             return s;
         char c = s.charAt(0);
@@ -196,16 +197,16 @@ public class Utils
             }
             else if (c != ' ' && s.charAt(i) == '?')
             {
-                retVal += c + " ";
+                retVal.append(c).append(' ');
             }
             else
             {
-                retVal += c;
+                retVal.append(c);
             }
             c = s.charAt(i);
         }
-        retVal += c;
-        return retVal;
+        retVal.append(c);
+        return retVal.toString();
     }
 
     public static String trimLeading(String str)

@@ -29,18 +29,18 @@ public class Eliza
                                   });
     
     private Stack<String> memory = new Stack<>();
-    private DecompositionList lastDecomp;
+    private List<Decomposition> lastDecompositions;
     private List<String> lastResponses;
-    boolean finished = false;
+    boolean hasFinished = false;
 
     public Eliza(InputStream scriptStream)
     {
         readScript(scriptStream);
     }
     
-    public boolean finished()
+    public boolean hasFinished()
     {
-        return finished;
+        return hasFinished;
     }
 
     final private void readScript(InputStream inputStream)
@@ -67,7 +67,7 @@ public class Eliza
     {
         String lines[] = new String[4];
 
-        if (Utils.match(s, "*response: *", lines))
+        if (Utils.extractIfMatched(s, "*response: *", lines))
         {
             if (lastResponses == null)
             {
@@ -76,27 +76,27 @@ public class Eliza
             }
             lastResponses.add(lines[1]);
         }
-        else if (Utils.match(s, "*decomposition: *", lines))
+        else if (Utils.extractIfMatched(s, "*decomposition: *", lines))
         {
-            if (lastDecomp == null)
+            if (lastDecompositions == null)
             {
-                System.err.println("Error: no last decomposition available");
+                System.err.println("Error: no last decompositions available");
                 return;
             }
             lastResponses = new ArrayList<>();
             String temp = lines[1];
-            if (Utils.match(temp, "$ *", lines))
+            if (Utils.extractIfMatched(temp, "$ *", lines))
             {
-                lastDecomp.add(lines[0], true, lastResponses);
+                lastDecompositions.add(new Decomposition(lines[0], true, lastResponses));
             }
             else
             {
-                lastDecomp.add(temp, false, lastResponses);
+                lastDecompositions.add(new Decomposition(temp, false, lastResponses));
             }
         }
-        else if (Utils.match(s, "*key: * #*", lines))
+        else if (Utils.extractIfMatched(s, "*key: * #*", lines))
         {
-            lastDecomp = new DecompositionList();
+            lastDecompositions = new ArrayList<>();
             lastResponses = null;
             int n = 0;
             if (lines[2].length() != 0)
@@ -110,20 +110,20 @@ public class Eliza
                     System.err.println(e.getMessage());
                 }
             }
-            keysList.add(lines[1], n, lastDecomp);
+            keysList.add(lines[1], n, lastDecompositions);
         }
-        else if (Utils.match(s, "*key: *", lines))
+        else if (Utils.extractIfMatched(s, "*key: *", lines))
         {
-            lastDecomp = new DecompositionList();
+            lastDecompositions = new ArrayList<>();
             lastResponses = null;
-            keysList.add(lines[1], 0, lastDecomp);
+            keysList.add(lines[1], 0, lastDecompositions);
         }
-        else if (Utils.match(s, "*synon: * *", lines))
+        else if (Utils.extractIfMatched(s, "*synon: * *", lines))
         {
             List<String> words = new ArrayList<>();
             words.add(lines[1]);
             s = lines[2];
-            while (Utils.match(s, "* *", lines))
+            while (Utils.extractIfMatched(s, "* *", lines))
             {
                 words.add(lines[0]);
                 s = lines[1];
@@ -131,23 +131,23 @@ public class Eliza
             words.add(s);
             syns.add(words);
         }
-        else if (Utils.match(s, "*pre: * *", lines))
+        else if (Utils.extractIfMatched(s, "*pre: * *", lines))
         {
             pre.add(lines[1], lines[2]);
         }
-        else if (Utils.match(s, "*post: * *", lines))
+        else if (Utils.extractIfMatched(s, "*post: * *", lines))
         {
             post.add(lines[1], lines[2]);
         }
-        else if (Utils.match(s, "*initial: *", lines))
+        else if (Utils.extractIfMatched(s, "*initial: *", lines))
         {
             initialMsg = lines[1];
         }
-        else if (Utils.match(s, "*final: *", lines))
+        else if (Utils.extractIfMatched(s, "*final: *", lines))
         {
             finalMsg = lines[1];
         }
-        else if (Utils.match(s, "*quit: *", lines))
+        else if (Utils.extractIfMatched(s, "*quit: *", lines))
         {
             quitMsges.add(" " + lines[1] + " ");
         }
@@ -172,7 +172,7 @@ public class Eliza
         s = Utils.compress(s);
         String lines[] = new String[2];
         //  Break apart sentences, and do each separately.
-        while (Utils.match(s, "*.*", lines))
+        while (Utils.extractIfMatched(s, "*.*", lines))
         {
             reply = sentence(lines[0]);
             if (reply != null)
@@ -199,7 +199,7 @@ public class Eliza
             if (reply != null)
                 return reply;
         }
-        //  No xnone, just say anything.
+
         return "My apologies, I am speechless at the moment!";
     }
 
@@ -216,14 +216,14 @@ public class Eliza
         s = Utils.pad(s);
         if (quitMsges.contains(s))
         {
-            if (finished)
+            if (hasFinished)
             {
                 // unreachable
                 return "We already said goodbye!";
             }
             else
             {
-                finished = true;
+                hasFinished = true;
                 return finalMsg; //lastWords;
             }
         }
@@ -280,7 +280,7 @@ public class Eliza
         String lines[] = new String[3];
         d.advance();
         String rule = d.getNextRule();
-        if (Utils.match(rule, "goto *", lines))
+        if (Utils.extractIfMatched(rule, "goto *", lines))
         {
             //  goto rule -- set gotoKey and return false.
             gotoKey.copyFrom(keysList.getKey(lines[0]));
@@ -289,7 +289,7 @@ public class Eliza
             System.err.println("Goto rule did not match key: " + lines[0]);
             return null;
         }
-        else if (Utils.match(rule, "makeQuery *", lines))
+        else if (Utils.extractIfMatched(rule, "makeQuery *", lines))
         {
             if ("TIME".equalsIgnoreCase(lines[0].trim()))
             {
@@ -311,7 +311,7 @@ public class Eliza
         }
         
         String retVal = "";
-        while (Utils.match(rule, "* (#)*", lines))
+        while (Utils.extractIfMatched(rule, "* (#)*", lines))
         {
             //  reassembly rule with number substitution
             rule = lines[2];        // there might be more
@@ -360,7 +360,7 @@ public class Eliza
             if (s == null)
                 break;
             System.out.println(processInputLine(s));
-            if (finished)
+            if (hasFinished)
             {
                 return 1;
             }
@@ -380,7 +380,7 @@ public class Eliza
             System.out.println(">>>>" + inputStr);
             String reply = processInputLine(inputStr);
             System.out.println(reply);
-            if (finished)
+            if (hasFinished)
                 return 1;
             inputStr = in.hasNext() ? null : in.nextLine();
             if (inputStr == null)

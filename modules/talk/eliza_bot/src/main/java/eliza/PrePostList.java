@@ -18,7 +18,7 @@ public class PrePostList extends ArrayList<PrePost>
         String lines[] = new String[2];
         String ret = Utils.trimLeading(str);
         str = "";
-        while (Utils.match(ret, "* *", lines))
+        while (Utils.extractIfMatched(ret, "* *", lines))
         {
             str += transform(lines[0]) + " ";
             ret = Utils.trimLeading(lines[1]);
