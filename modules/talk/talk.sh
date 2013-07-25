@@ -3,8 +3,13 @@
 #  author Vy Nguyen
 #
 
+
 arg1=$1 # sender (the person I am talking to)
 arg2=$2 # channel
+
+echo $1 > args.txt
+echo $2 >> args.txt
+echo $3 >> args.txt
 
 user_dir=modules/talk/logs/$1
 if [ ! -d "$user_dir" ]; then

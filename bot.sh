@@ -2,7 +2,7 @@
 
 . bot.properties
 input=".bot.cfg"
-echo "Starting session: $(date "+[%y:%m:%d %T]")">$log 
+echo "Starting session: $(date "+[%y:%m:%d %T]")" #>$log 
 echo "NICK $nick" > $input 
 echo "USER $user" >> $input
 echo "JOIN #$channel" >> $input
@@ -44,13 +44,17 @@ do
         from=$who
       fi
       will=$(echo "$will" | perl -pe "s/^ //")
+      echo $will > args_test.txt
       com=$(echo "$will" | cut -d " " -f1)
       if [ -z "$(ls modules/ | grep -i -- "$com")" ]
       then
-        ./modules/help/help.sh $who $from >> $input
+	 # run talk.sh if no module with given name is found
+	./modules/talk/talk.sh $who $from  $(echo "$will") >> $input
+        #./modules/help/help.sh $who $from >> $input
         continue
       fi
-      ./modules/$com/$com.sh $who $from $(echo "$will" | cut -d " " -f2-99) >> $input
+      #./modules/talk/talk.sh $who $from $(echo "$will" | cut -d " " -f2-99) >> $input
+     ./modules/$com/$com.sh $who $from $(echo "$will" | cut -d " " -f2-99) >> $input
     ;;
     *)
       echo "$res"
