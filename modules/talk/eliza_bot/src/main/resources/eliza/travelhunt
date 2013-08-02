@@ -1,5 +1,5 @@
-initial: Hi there! Hope you're having a wonderful time with TravelHunt! How can I help?
-final: Enjoy your trip!
+initial: Hello, how's it going?  What brings you here today?
+final: I was nice talking to you!  My secretary will send you the bill.
 quit: bye
 quit: au revoir
 quit: goodbye
@@ -43,6 +43,9 @@ synon: be am is are was
 key: xnone
   decomposition: *
     response: I'm not sure I understand you fully.
+    response: Please go on.
+    response: What does that suggest to you ?
+    response: Do you feel strongly about discussing such things ?
 key: sorry
   decomposition: *
     response: Please don't apologise.
@@ -359,8 +362,6 @@ key: can
 key: who
   decomposition: * who are you *
     response: I am a bot trained to entertain bored people.
-key: location
-  decomposition: * how do I pic
 key: what
   decomposition: * how is the weather *
     response: makeQuery WEATHER

@@ -13,6 +13,51 @@ public class Utils
     private static final String DIGITS = "0123456789";
     private static final String WEATHER = "http://api.wunderground.com/api/de13f2e6a2c425f6/conditions/q/MA/Newton.json";
    
+    public static void main(String[] args)
+    {
+        String st = "boston common";
+        String t = "the boston commons";
+        
+        System.out.println(getDis(st, t));
+    }
+
+    public static int getDis(String str, String text)
+    {
+        if (str.equals(text))
+            return 0;
+        else if (str.length() == 0)
+            return text.length();
+        else if (text.length() == 0)
+            return str.length();
+
+        int strArrDis[] = new int[text.length() + 1];
+        int textArrDis[] = new int[text.length() + 1];
+
+        for (int i = 0; i < strArrDis.length; i++)
+            strArrDis[i] = i;
+
+        for (int i = 0; i < str.length(); i++)
+        {
+            textArrDis[0] = i + 1;
+            for (int j = 0; j < text.length(); j++)
+            {
+                textArrDis[j + 1] = min(textArrDis[j] + 1, 
+                                        strArrDis[j + 1] + 1,
+                                        strArrDis[j] + (str.charAt(i) == text.charAt(j) ? 0 : 1));
+            }
+            System.arraycopy(textArrDis, 0, strArrDis, 0, strArrDis.length);
+        }
+
+        return textArrDis[text.length()];
+    }
+
+    public static int min(int n1, int n2, int n3)
+    {
+        return n1 <= n2
+                    ? (n1 < n3 ? n1 : n3)
+                    : (n2 < n3 ? n2 : n3);
+    }
+
     public static String getCurrentTime()
     {
         return new DateTime().toString("HH:mm:ss");
