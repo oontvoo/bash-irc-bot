@@ -8,3 +8,12 @@ and they will be loaded up during runtime.
 
 call modules with `botname: test arg1 arg2 ....`
 
+
+Hilighted modules
+==========
+
+1) `talk`
+This allows the bot to answer intelligently converse with users.
+
+
+
