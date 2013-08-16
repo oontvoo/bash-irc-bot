@@ -12,13 +12,18 @@ public class Utils
 {
     private static final String DIGITS = "0123456789";
     private static final String WEATHER = "http://api.wunderground.com/api/de13f2e6a2c425f6/conditions/q/MA/Newton.json";
-   
+    
     public static void main(String[] args)
     {
         String st = "boston common";
         String t = "the boston commons";
         
         System.out.println(getDis(st, t));
+    }
+
+    public static String getNextShuttleTime(String name)
+    {
+        throw new UnsupportedOperationException();
     }
 
     public static int getDis(String str, String text)
