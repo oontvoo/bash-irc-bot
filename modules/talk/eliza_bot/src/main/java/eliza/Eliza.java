@@ -301,7 +301,6 @@ public class Eliza
             }
             else if ("WEATHER".equalsIgnoreCase(lines[0].trim()))
             {
-             
                return Utils.getCurrentWeather();
             }
             else 

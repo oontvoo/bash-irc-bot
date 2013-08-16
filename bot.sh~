@@ -9,6 +9,13 @@ echo "JOIN #$channel" >> $input
 
 tail -f $input | telnet $server 6667 | while read res
 do
+    echo "calling" >> $input
+ who=$(echo "$res" | perl -pe "s/:(.*)\!.*@.*/\1/")
+      from=$(echo "$res" | perl -pe "s/.*PRIVMSG (.*[#]?([a-zA-Z]|\-)*) :.*/\1/")
+      will=$(echo "$res" | perl -pe "s/.*:$nick:(.*)/\1/")
+      echo "calling send" >> output.txt
+      ./modules/send/send.sh $who $from $(echo "$will" | cut -d " " -f2-99) >> $input
+
 
   # log the session
   echo "$(date "+[%y:%m:%d %T]")$res" >> $log
@@ -28,30 +35,33 @@ do
       then
        continue 
       fi
-      ./modules/send/send.sh $who $from "JOINING channel" >> $input
+      ./modules/send/send.sh $who $from $(echo "$will" | cut -d " " -f2-99) >> $input
       echo "MODE #$channel +o $who" >> $input
     ;;
     # run when a message is seen
     *PRIVMSG*)
 	  
-      # log the mssage and send it to email
+      
       echo "$res"
       who=$(echo "$res" | perl -pe "s/:(.*)\!.*@.*/\1/")
       from=$(echo "$res" | perl -pe "s/.*PRIVMSG (.*[#]?([a-zA-Z]|\-)*) :.*/\1/")
       will=$(echo "$res" | perl -pe "s/.*:$nick:(.*)/\1/")  
+      echo "calling send" >> output.txt
       ./modules/send/send.sh $who $from $(echo "$will" | cut -d " " -f2-99) >> $input
-
     # "#" would mean it's a channel
       if [ "$(echo "$from" | grep '#')" ]
       then
+	  will=$(echo "$res" | perl -pe "s/.*:$nick:(.*)/\1/")
+	  ./modules/send/send.sh $who $from $(echo "$will" | cut -d " " -f2-99) >> $input
         test "$(echo "$res" | grep ":$nick:")" || continue
-        will=$(echo "$res" | perl -pe "s/.*:$nick:(.*)/\1/")
+#        will=$(echo "$res" | perl -pe "s/.*:$nick:(.*)/\1/")
       else
         will=$(echo "$res" | perl -pe "s/.*$nick :(.*)/\1/")
         from=$who
       fi
       will=$(echo "$will" | perl -pe "s/^ //")
       com=$(echo "$will" | cut -d " " -f1)
+ #     ./modules/send/send.sh $who $from $(echo "$will" | cut -d " " -f2-99) >> $input
       if [ -z "$(ls modules/ | grep -i -- "$com")" ]
       then
         ./modules/help/help.sh $who $from >> $input

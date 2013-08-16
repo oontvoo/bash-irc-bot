@@ -4,6 +4,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Properties;
+import javax.mail.Address;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import org.joda.time.DateTime;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -13,14 +21,31 @@ public class Utils
     private static final String DIGITS = "0123456789";
     private static final String WEATHER = "http://api.wunderground.com/api/de13f2e6a2c425f6/conditions/q/MA/Newton.json";
     
-    public static void main(String[] args)
+    public static void main(String[] args) throws MessagingException
     {
-        String st = "boston common";
-        String t = "the boston commons";
-        
-        System.out.println(getDis(st, t));
+        System.out.println("sending mail");
+        sendEmail("noone", "fake IRC log", "mail.tripadvisor.com", "mail.smtp.host", "vthaonguyen@tripadvisor.com");
     }
 
+    public static String sendEmail(String sender, String content, String mailServer, String host, String username) throws MessagingException
+    {
+        Properties props = System.getProperties();
+        props.put(host, mailServer);
+        Session session = Session.getInstance(props, null);
+        
+        Message msg = new MimeMessage(session);
+        msg.setFrom(new InternetAddress("TheAwesomeBot@tripadvisor.com"));
+        Address toAddress = new InternetAddress(username);
+        msg.setRecipient(Message.RecipientType.TO, toAddress);
+        msg.setSubject("TEst");
+        msg.setContent(content, "text/html");
+        
+        Transport.send(msg);
+        System.out.println("msg sent");
+        
+        return "SENT";
+    }
+    
     public static String getNextShuttleTime(String name)
     {
         throw new UnsupportedOperationException();
