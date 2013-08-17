@@ -43,12 +43,10 @@ public class Main
                 return ;
             sendEmail("New msg from: " + args[0],
                       combine(args),
-                      "mail.tripadvisor.com",
+                      "mail.mailserver.com",
                       "mail.smtp.host",
                       receivers);
         }
-        //System.out.println("sending mail");
-        //sendEmail("noone", "fake IRC log", "mail.tripadvisor.com", "mail.smtp.host", new String[]{"vthaonguyen@tripadvisor.com"});
     }
 
     public static String sendEmail(String subject, String content, String mailServer, String host, String users[]) throws MessagingException
@@ -58,7 +56,7 @@ public class Main
         Session session = Session.getInstance(props, null);
         
         Message msg = new MimeMessage(session);
-        msg.setFrom(new InternetAddress("TheAwesomeBot@tripadvisor.com"));
+        msg.setFrom(new InternetAddress("TheAwesomeBot@mailserver.com"));
         
         Address toAddr[] = new Address[users.length];
         for (int n = 0; n < toAddr.length; ++n)
