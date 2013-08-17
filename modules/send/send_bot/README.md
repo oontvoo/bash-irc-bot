@@ -6,6 +6,6 @@ This will generate an executable `jar` file under `./target/`
 
 2) To run the executable 
 
-   `java -jar eliza-bot.jar [<path to custom script>]`
+   `java -jar send-bot.jar <subject> <path to emails list file> <body of email>`
 
-   (Note: If you do not specify a new script, the default one, which is packaged into the `jar` will be used)
+   
